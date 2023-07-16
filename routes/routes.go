@@ -2,12 +2,15 @@ package routes
 
 import (
 	"tugas/controllers"
+	"tugas/middleware"
 
 	"github.com/labstack/echo"
 )
 
 func New() *echo.Echo {
 	e := echo.New()
+
+	middleware.LogMiddleware(e)
 
 	e.GET("/users", controllers.GetUsersController)
 	e.GET("/users/:id", controllers.GetUserController)
