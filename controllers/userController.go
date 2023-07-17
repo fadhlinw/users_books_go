@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"tugas/database"
+	"tugas/middleware"
 	"tugas/models"
 
 	"github.com/labstack/echo"
@@ -37,13 +38,43 @@ func GetUserController(c echo.Context) error {
 	})
 }
 
-func CreateUserController(c echo.Context) error {
+func LoginUserController(c echo.Context) error {
 	var user models.User
 	if err := c.Bind(&user); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request payload")
 	}
 
-	err := database.CreateUser(&user)
+	err := database.LoginUser(&user)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	token, err := middleware.CreateToken(int(user.ID), user.Name)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+
+	UserResponse := models.UserResponse{int(user.ID), user.Name, user.Email, token}
+
+	return c.JSON(http.StatusCreated, map[string]interface{}{
+		"status": "success",
+		"user":   UserResponse,
+	})
+}
+
+func CreateUserController(c echo.Context) error {
+	var user models.User
+
+	if err := c.Bind(&user); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request payload")
+	}
+
+	err := database.GetUserbyEmail(user.Email)
+	if err == nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Email Sudah Terdaftar")
+	}
+
+	err = database.CreateUser(&user)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

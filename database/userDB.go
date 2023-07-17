@@ -21,8 +21,23 @@ func GetUser(id int) (*models.User, error) {
 	return user, nil
 }
 
+func GetUserbyEmail(email string) error {
+	user := &models.User{}
+	if err := config.DB.Where("email = ?", user.Email).First(user).Error; err != nil {
+		return err
+	}
+	return nil
+}
 func CreateUser(user *models.User) error {
+
 	if err := config.DB.Create(&user).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func LoginUser(user *models.User) error {
+	if err := config.DB.Where("email = ? AND password = ?", user.Email, user.Password).First(&user).Error; err != nil {
 		return err
 	}
 	return nil
