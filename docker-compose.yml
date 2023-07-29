@@ -1,0 +1,26 @@
+version: '3'
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: tugas
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 12345
+    ports:
+      - "3306:3306"
+    networks:
+      - my_network
+
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
