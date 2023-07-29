@@ -9,7 +9,7 @@ import (
 
 var DB *gorm.DB
 
-const DSN = "root:12345@tcp(localhost:3306)/tugas?charset=utf8&parseTime=True&loc=Local"
+const DSN = "admin:golang12345@tcp(db-golang.cjgklklpceh0.ap-southeast-2.rds.amazonaws.com:3306)/tugas?charset=utf8&parseTime=True&loc=Local"
 
 func InitDB() {
 	var err error
